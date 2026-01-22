@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import type { CurriculumData, HealthCheck, MemoryStats, Recipe, Memory, Skill } from '../types';
 
-const API_BASE = '/api';
+const API_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE = `${API_URL}/api`;
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
