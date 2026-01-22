@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react';
-import type { MemoryStats, Recipe } from '../../types';
+import type { MemoryStats, Recipe, Memory, Skill } from '../../types';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/Tabs';
 import { ScrollArea } from '../ui/ScrollArea';
 import { Badge } from '../ui/Badge';
 import { useApi } from '../../hooks/useApi';
 
+const BOTS = ['Andy', 'Bruno', 'Carlos', 'Diana', 'Elena', 'Felix', 'Gina', 'Hugo', 'Iris', 'Juan'];
+
 export function MemoriesPanel() {
-  const { getMemoryStats, getRecipes } = useApi();
+  const { getMemoryStats, getRecipes, getEpisodicMemories, getSkills } = useApi();
   const [stats, setStats] = useState<MemoryStats | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [selectedBot, setSelectedBot] = useState<string>(BOTS[0]);
+  const [memories, setMemories] = useState<Memory[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,6 +24,18 @@ export function MemoriesPanel() {
     };
     fetchData();
   }, [getMemoryStats, getRecipes]);
+
+  useEffect(() => {
+    const fetchBotData = async () => {
+      const [memoriesResult, skillsResult] = await Promise.all([
+        getEpisodicMemories(selectedBot, 20),
+        getSkills(selectedBot, 20),
+      ]);
+      if (memoriesResult) setMemories(memoriesResult);
+      if (skillsResult) setSkills(skillsResult);
+    };
+    fetchBotData();
+  }, [selectedBot, getEpisodicMemories, getSkills]);
 
   return (
     <Card as="section" aria-labelledby="memories-heading">
@@ -84,15 +101,75 @@ export function MemoriesPanel() {
           </TabsContent>
 
           <TabsContent value="episodic">
-            <p className="text-[var(--color-text-muted)] text-sm py-4 text-center">
-              Selecciona un bot para ver sus memorias episódicas
-            </p>
+            <div className="mb-3">
+              <label htmlFor="bot-select-episodic" className="sr-only">Seleccionar bot</label>
+              <select
+                id="bot-select-episodic"
+                value={selectedBot}
+                onChange={(e) => setSelectedBot(e.target.value)}
+                className="w-full p-2 rounded bg-[var(--color-surface-elevated)] border border-[var(--color-border)] text-sm"
+              >
+                {BOTS.map((bot) => (
+                  <option key={bot} value={bot}>{bot}</option>
+                ))}
+              </select>
+            </div>
+            <ScrollArea className="h-48">
+              {memories.length === 0 ? (
+                <p className="text-[var(--color-text-muted)] text-sm py-4 text-center">
+                  Sin memorias para {selectedBot}
+                </p>
+              ) : (
+                <ul className="space-y-2" role="list">
+                  {memories.map((memory) => (
+                    <li key={memory.id} className="p-2 rounded bg-[var(--color-surface-elevated)]">
+                      <p className="text-sm">{memory.description}</p>
+                      <footer className="flex items-center justify-between mt-1">
+                        <Badge variant="info">{memory.type}</Badge>
+                        <time className="text-xs text-[var(--color-text-muted)]">
+                          {new Date(memory.timestamp).toLocaleString('es-ES')}
+                        </time>
+                      </footer>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </ScrollArea>
           </TabsContent>
 
           <TabsContent value="skills">
-            <p className="text-[var(--color-text-muted)] text-sm py-4 text-center">
-              Selecciona un bot para ver sus habilidades aprendidas
-            </p>
+            <div className="mb-3">
+              <label htmlFor="bot-select-skills" className="sr-only">Seleccionar bot</label>
+              <select
+                id="bot-select-skills"
+                value={selectedBot}
+                onChange={(e) => setSelectedBot(e.target.value)}
+                className="w-full p-2 rounded bg-[var(--color-surface-elevated)] border border-[var(--color-border)] text-sm"
+              >
+                {BOTS.map((bot) => (
+                  <option key={bot} value={bot}>{bot}</option>
+                ))}
+              </select>
+            </div>
+            <ScrollArea className="h-48">
+              {skills.length === 0 ? (
+                <p className="text-[var(--color-text-muted)] text-sm py-4 text-center">
+                  Sin habilidades para {selectedBot}
+                </p>
+              ) : (
+                <ul className="space-y-2" role="list">
+                  {skills.map((skill) => (
+                    <li key={skill.id} className="p-2 rounded bg-[var(--color-surface-elevated)]">
+                      <header className="flex items-center justify-between">
+                        <strong className="text-sm">{skill.name}</strong>
+                        <Badge variant="success">{skill.category}</Badge>
+                      </header>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-1">{skill.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </ScrollArea>
           </TabsContent>
         </Tabs>
       </CardContent>
