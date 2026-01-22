@@ -42,7 +42,7 @@ const TOTAL_TASKS = TECH_TREE.phases.reduce((sum, phase) => sum + phase.tasks.le
 
 const BOT_NAMES = ['Andy', 'Bruno', 'Carlos', 'Diana', 'Elena', 'Felix', 'Gina', 'Hugo', 'Iris', 'Juan'];
 
-interface AgentProgress {
+export interface AgentProgress {
   agent: string;
   completed: string[];
   failed: string[];

@@ -45,7 +45,7 @@ export class HealthService {
       checks.qdrant = 'unhealthy';
     }
 
-    const isHealthy = Object.values(checks).every((v) => v === 'healthy' || v instanceof Date || typeof v === 'string');
+    const isHealthy = checks.api === 'healthy' && checks.redis === 'healthy' && checks.mongodb === 'healthy' && checks.qdrant === 'healthy';
 
     return {
       status: isHealthy ? 'healthy' : 'degraded',

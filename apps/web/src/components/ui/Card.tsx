@@ -15,6 +15,7 @@ interface CardTitleProps {
   children: React.ReactNode;
   className?: string;
   as?: 'h2' | 'h3' | 'h4';
+  id?: string;
 }
 
 interface CardContentProps {
@@ -30,8 +31,8 @@ export function CardHeader({ children, className }: CardHeaderProps) {
   return <header className={cn('mb-3', className)}>{children}</header>;
 }
 
-export function CardTitle({ children, className, as: Component = 'h3' }: CardTitleProps) {
-  return <Component className={cn('text-lg font-semibold', className)}>{children}</Component>;
+export function CardTitle({ children, className, as: Component = 'h3', id }: CardTitleProps) {
+  return <Component id={id} className={cn('text-lg font-semibold', className)}>{children}</Component>;
 }
 
 export function CardContent({ children, className }: CardContentProps) {
