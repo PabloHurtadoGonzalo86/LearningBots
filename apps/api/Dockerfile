@@ -3,20 +3,23 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prod
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/api/package.json ./apps/api/
+RUN pnpm install --frozen-lockfile --filter @learning-bots/api
 
 FROM base AS build
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-COPY . .
-RUN pnpm build
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/api ./apps/api
+RUN pnpm install --frozen-lockfile --filter @learning-bots/api
+RUN pnpm --filter @learning-bots/api build
 
 FROM base AS runtime
 ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=build /app/apps/api/dist ./dist
+COPY --from=build /app/apps/api/package.json ./
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY package.json ./
+COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 
 USER node
 EXPOSE 3000
