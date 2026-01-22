@@ -15,7 +15,6 @@ LearningBots/
 ├── apps/
 │   ├── api/          # NestJS backend
 │   └── web/          # React frontend
-├── k8s/              # Kubernetes manifests
 └── packages/         # Shared packages
 ```
 
@@ -33,17 +32,6 @@ pnpm test
 
 # Build for production
 pnpm build
-```
-
-## Deployment
-
-```bash
-# Build Docker images
-docker build -t learning-bots-api ./apps/api
-docker build -t learning-bots-web ./apps/web
-
-# Deploy to Kubernetes
-kubectl apply -k k8s/
 ```
 
 ## Environment Variables

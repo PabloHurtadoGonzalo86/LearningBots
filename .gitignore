@@ -50,18 +50,6 @@ apikey*
 auth.json
 oauth*.json
 
-# Kubernetes secrets (keep only examples)
-k8s/secret.yaml
-k8s/secrets.yaml
-k8s/*-secret.yaml
-k8s/*-secrets.yaml
-!k8s/secret.example.yaml
-
-# Helm values with secrets
-values-secret*.yaml
-values.secret.yaml
-*-values-secret.yaml
-
 # Docker
 .docker/
 docker-compose.override.yml
