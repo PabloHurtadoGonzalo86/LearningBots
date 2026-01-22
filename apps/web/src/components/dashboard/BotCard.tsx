@@ -28,14 +28,26 @@ export function BotCard({ bot }: BotCardProps) {
   const position = bot.gameState?.position;
   const goal = bot.goal?.goal;
 
+  // Critical status detection
+  const isCriticalHealth = health > 0 && health < 5;
+  const isCriticalFood = food < 5;
+  const isDying = health > 0 && health < 2;
+  const isStarving = food === 0;
+  const isCritical = isCriticalHealth || isCriticalFood;
+
   return (
-    <Card className="h-full">
+    <Card className={`h-full ${isCritical ? 'ring-2 ring-red-500 animate-pulse' : ''} ${isDying || isStarving ? 'bg-red-900/20' : ''}`}>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle as="h3" className="flex items-center gap-2">
           <span role="img" aria-label={bot.role}>
             {roleIcons[bot.role] || '🤖'}
           </span>
           {bot.name}
+          {(isDying || isStarving) && (
+            <span className="text-red-500 text-xs font-bold animate-pulse" title="Bot en peligro crítico">
+              ⚠️ CRÍTICO
+            </span>
+          )}
         </CardTitle>
         <Badge variant={isOnline ? 'success' : 'error'}>{isOnline ? 'Online' : 'Offline'}</Badge>
       </CardHeader>

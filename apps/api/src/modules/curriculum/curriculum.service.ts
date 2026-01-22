@@ -64,10 +64,15 @@ export class CurriculumService {
   }
 
   async getAgentProgress(agent: string): Promise<AgentProgress> {
-    const state = await this.redisService.getBotState(agent);
-    const completed = state.gameState?.completedTasks || [];
-    const failed = state.gameState?.failedTasks || [];
-    const current = state.goal?.goal || null;
+    const [state, curriculum] = await Promise.all([
+      this.redisService.getBotState(agent),
+      this.redisService.getCurriculumProgress(agent),
+    ]);
+
+    // Use curriculum data from Redis if available, fallback to gameState
+    const completed = curriculum?.completedTasks || state.gameState?.completedTasks || [];
+    const failed = curriculum?.failedTasks || state.gameState?.failedTasks || [];
+    const current = curriculum?.currentTask || state.goal?.goal || null;
 
     return {
       agent,

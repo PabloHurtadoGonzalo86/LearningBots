@@ -49,6 +49,11 @@ export class RedisService implements OnModuleDestroy {
     return data ? JSON.parse(data) : null;
   }
 
+  async getCurriculumProgress(botName: string) {
+    const data = await this.redis.get(`mindcraft:${botName}:curriculum`);
+    return data ? JSON.parse(data) : null;
+  }
+
   subscribe(callback: (channel: string, message: string) => void) {
     const subscriber = this.redis.duplicate();
     subscriber.psubscribe('mindcraft:*');
