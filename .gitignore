@@ -31,6 +31,9 @@ out/
 *secrets.yml
 *secret.yaml
 *secret.yml
+
+# Kubernetes (keep local only)
+k8s/
 credentials.json
 service-account.json
 serviceaccount.json

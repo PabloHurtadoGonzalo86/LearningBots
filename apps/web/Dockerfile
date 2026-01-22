@@ -7,6 +7,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
+ARG VITE_API_URL=https://learningminecraftapi.pablohgdev.com
+ENV VITE_API_URL=$VITE_API_URL
 COPY . .
 RUN pnpm build
 
